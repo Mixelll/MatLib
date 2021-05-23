@@ -1,4 +1,17 @@
-function [select_data, full_data, sw_plot, varargout]  = MFIA_general_sweeper(device, additional_settings, sweep_param, sweep_range, pts, read_param_struct, varargin)
+function [select_data, full_data, sw_plot, varargout]  = MFIA_general_sweeper(device, additional_settings, sweep_paramnew, sweep_range, ptsnew, read_param_struct, varargin)
+sweep_param = 'offset';
+if ~isempty(sweep_paramnew)
+    sweep_param = sweep_paramnew;
+end
+
+pts = 100;
+if ~isempty(ptsnew)
+    pts = ptsnew;
+end
+% sweep_param = standard names: 'frequency', 'offet' (DC bias), 'amplitude' (AC)
+% additional_settings = can be empty
+% read_param_struct = please make struct according to MFIA numecalture. e.g. = struct.param1
+% varargin = check name-value pairs below
 varargout = {};
 % Define parameters relevant to this example. Default values specified by the
 % inputParser below are overwritten if specified as name-value pairs via the
@@ -6,7 +19,6 @@ varargout = {};
 p = inputParser;
 p.KeepUnmatched=true;
 isnonnegscalar = @(x) isnumeric(x) && isscalar(x) && (x > 0);
-
 %Sweep timeout.
 p.addParameter('timeout', 120, isnonnegscalar);
 % Perform one single sweep.

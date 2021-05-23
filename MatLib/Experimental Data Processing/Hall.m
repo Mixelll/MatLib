@@ -1,5 +1,3 @@
-function [] = Hall()
-
 %path, index, title, ref, r, plotop,
 
 fileprop = {'txt', '	', [0 0]}; %{'format', 'delimeter', [row_shift column_shift OPTIONAL_to_row OPTIONAL_to_column]}
@@ -20,7 +18,6 @@ plot_charts(Hallcells, rplot, 0, 0, 0, ref, plotop1, plotop2, fit); % (scells, s
 % Noise = s_noise(DiffDC{end-2}, DiffDC{end-1}, DiffDC{end}, rsmooth, range, acqxP, '[Counts]*[1/cm]');
 % [Signalarea, SignalareaScaled] = signal_area(DiffDC{end-2}, DiffDC{end-1}, DiffDC{end}, range, acqxP, '[Counts]*[1/cm]')
 
-end
 
 
 

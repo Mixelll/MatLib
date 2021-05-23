@@ -1,5 +1,8 @@
 function [figs] = MFIA_PGUI(SubPlots,D)
 clear 'DataFigureHandles'
+if ~isgraphics(SubPlots)
+    [~, SubPlots, ~,~,~,D] = process_plot_struct_data3D(SubPlots,[],[]);
+end
 k = 0;
 Nsbp = numel(SubPlots);
 if D==3

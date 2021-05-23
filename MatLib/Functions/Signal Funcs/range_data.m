@@ -5,7 +5,5 @@ if ~isempty(varargin)
     x = x(logical_vec);
     y = y(logical_vec);
 end
-    
-
 end
 

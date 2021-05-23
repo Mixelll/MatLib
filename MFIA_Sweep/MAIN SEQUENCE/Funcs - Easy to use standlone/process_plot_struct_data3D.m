@@ -1,4 +1,17 @@
-function [fig, sbp, OutStruct, data_cell, axes_cell, NDims]  = process_plot_struct_data3D(struct, order, slic, varargin)
+function [fig, sbp, OutStruct, data_cell, axes_cell, NDims]  = process_plot_struct_data3D(struct, ordernew, slicnew, varargin)
+order = {'frequency','amplitude','offset'};
+if ~isempty(ordernew)
+    order = ordernew;
+end
+slic = {};
+slic(:,end+1) = {'frequency'; [1e2 1e3 1e4 1e5 5e5]};
+slic(:,end+1) = {'amplitude'; []}; 
+slic(:,end+1) = {'offset'; [0.1 0.2 0.5 1 1.5 0 -0.1 -0.2 -0.5 -1 -1.5]};
+if ~isempty(slicnew)
+    slic = slicnew;
+end
+% order = standard names: {'frequency', 'offet' (DC bias), 'amplitude' (AC)}
+
 CharOrString = @(s) ischar(s) || isstring(s);
 p = inputParser;
 p.KeepUnmatched=true;
