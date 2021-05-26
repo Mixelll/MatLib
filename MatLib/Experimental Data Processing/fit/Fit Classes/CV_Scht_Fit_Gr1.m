@@ -1,0 +1,58 @@
+classdef CV_Scht_Fit_Gr1 < matlab.mixin.SetGet
+	properties
+        T = 296;
+        Range = [-inf inf]
+        Area = (150e-4)^2 * pi
+        RelativePermitivitty = 11.68
+        Doping = sym('N')
+        Doping_Lim = [0 1e17 inf]
+        Vb = sym('Vb')
+        Vb_Lim = [0 0.5 10]
+        IdealityFactor = sym('n')
+        Ideality_Factor_Lim = [0.01 1 100]
+        Graphene_Doping = sym('n0');
+        Graphene_Doping_Lim = [0 9e12 inf];
+        v_fermi_Gr = 1e8;
+        Graphene_Vdrop_Coeff = 'Dependent on n0';
+        Graphene_Vdrop_Coeff_Lim = [-10 0.5 10 ];
+        FitProperties = {'Robust','Bisquare'}
+        FitPlotProperties = {}
+        LegendProp = {'Location','Best'}
+    end
+	methods 
+        function Fit(o, x,y, Target, varargin)
+            DefNameValueTemp = fn_struct2cell(C_schot_fit2_B1('parser','','','','','','','',''));
+            DefNameValue = [DefNameValueTemp(4,:) ; DefNameValueTemp(2,:)];
+            LimChanged = @(x,name) ~isempty([DefNameValue{2,strcmpi(DefNameValue(1,:),name)}]) && ~isequal(x,[DefNameValue{2,strcmpi(DefNameValue(1,:),name)}]);
+            Limits = {};
+            for c = DefNameValue
+                if LimChanged(o.(c{2}), c{2}), Limits(end+1:end+2) = {o.(c{2}) o.(c{2})}; end
+            end
+            [FitLeg, fun, span] = C_schot_fit2_B1(x,y,o.Area,o.RelativePermitivitty,o.Doping,o.Vb,o.IdealityFactor,o.Graphene_Doping,o.Graphene_Vdrop_Coeff,o.FitProperties,Limits{:});
+            hold(Target, 'on')
+            if ~isempty(varargin)
+                legend(varargin{:});
+            elseif isempty(isempty(Target.Legend))
+                legend('Measured Data');
+            end
+            Lines = findobj(Target.Children, 'Type','Line');
+            
+            if ~isempty(Lines)
+                fplot(fun, span, o.FitPlotProperties{:}, 'Parent',Target, 'Color',Lines(1).Color);
+            else
+                fplot(fun, span, o.FitPlotProperties{:}, 'Parent',Target);
+            end
+            legend([Target.Legend.String(1:end-1) {[FitLeg newline 'Model: ' Target.Legend.String{end}]}])
+            if ~isempty(o.LegendProp)
+                legend(o.LegendProp{:});
+            end
+            hold(Target, 'off')
+        end
+        function OK = Menu(o)
+            [~, OK, Pairs] = StructrureFieldsMenu(o,@parse_num_cell_sym2char,@parse_str2num_cell_sym,['Input Fit Parameters for model ' C_schot_fit2_B1('model','','','','','','','','')]);
+            if OK
+                set(o, Pairs{:})
+            end
+        end
+	end
+end

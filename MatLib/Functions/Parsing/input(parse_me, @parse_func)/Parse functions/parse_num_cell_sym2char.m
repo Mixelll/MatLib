@@ -6,7 +6,7 @@ end
 if isempty(in) && ~iscell(in)
     out = '';
 elseif isnumeric(in)
-    out = num2str(in);
+    out = num2str(in,4);
 % elseif in(1)=='{' && in(end)=='}'
 elseif iscell(in)
     out = '{';

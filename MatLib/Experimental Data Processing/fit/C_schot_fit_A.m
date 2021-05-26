@@ -1,7 +1,12 @@
 function [str, fun, span, FittedParamCell] = C_schot_fit_A(x,y,BoxIn,A,es,N,Vb,n,FitProp,varargin)
+if strcmpi(x, 'model')
+    str = 'C = A*sqrt(es*e0*q*N)/sqrt(2*n*(n*(Vb-k*T)-V))'; fun = []; span = []; FittedParamCell = [];
+else
 NotNumSym = @(x) ~isnumeric(x) && ~isa(x,'sym');
 if isempty(FitProp)
     FitProp = {};
+elseif ~iscell(FitProp)
+    FitProp = {FitProp};
 end
 if size(x,2)>size(x,1)
     x = x.';
@@ -185,5 +190,6 @@ else
     fun = [];
     span = [];
     FittedParamCell = [coefficients {'R2'}; num2cell(nan(1,length(coefficients)+1)); coefficients {'R2'}]; 
+end
 end
 

@@ -1,25 +1,40 @@
 function [str, fun, span, FittedVarsCell] = C_schot_fit2_B1(x,y,A,es,N,Vb,n,a,n0,varargin)
-
 p = inputParser;
 p.KeepUnmatched=true;
-p.addParameter('range', [-inf inf -inf inf], @isnumeric);
-p.addParameter('FirstOut', '', @isstring);
+p.addParameter('Range', [-inf inf], @isnumeric);
 p.addParameter('T', 296, @isnumeric);
 p.addParameter('f', 10^ceil(abs(log10(1/mean(y)))), @isnumeric);
-p.addParameter('N',[0 1e16 inf], @isnumeric);
-p.addParameter('Vb',[0 0.5 10], @isnumeric);
-p.addParameter('n',[0.01 1 1000], @isnumeric);
-p.addParameter('n0',[0 9e12 inf], @isnumeric);
-p.addParameter('a',[-10 0.5 10 ], @isnumeric);
+p.addParameter('Doping_Lim',[0 1e17 inf], @isnumeric);
+p.addParameter('Vb_Lim',[0 0.5 10], @isnumeric);
+p.addParameter('Ideality_Factor_Lim',[0.01 1 1000], @isnumeric);
+p.addParameter('Initial_Graphene_Doping_Lim',[0 9e12 inf], @isnumeric);
+p.addParameter('v_fermi_Gr',1e8, @isnumeric);
+p.addParameter('Graphene_Vdrop_Coeff_Lim',[-10 0.5 10 ], @isnumeric);
+p.addParameter('FitProperties',{'Robust','Bisquare'});
+p.addParameter('FirstOut', '', @isstring);
 p.parse(varargin{:});
-
+if strcmpi(x, 'parser')
+    s = struct;
+    for c = p.UsingDefaults
+        s.(c{:}) = p.Results.(c{:});
+    end
+    str = s; fun = []; span = []; FittedVarsCell = [];
+elseif strcmpi(x, 'model')
+    str = 'C = A*sqrt(es*e0*q*N)/sqrt(2*n*(n*(Vb-k*T)-V+a*V)), a = h/4/sqrt(pi)*v_fermi_gr*sqrt(es*e0*N)/sqrt(2*q*n0)'; fun = []; span = []; FittedVarsCell = [];
+else
 T = p.Results.T;
 f = p.Results.f;
+FitProp = p.Results.FitProperties;
+if isempty(FitProp)
+    FitProp = {};
+elseif ~iscell(FitProp)
+    FitProp = {FitProp};
+end
 
-if length(p.Results.range)==2
-    range = [p.Results.range -inf inf];
+if length(p.Results.Range)==2
+    range = [p.Results.Range -inf inf];
 else
-    range = p.Results.range;
+    range = p.Results.Range;
 end
 
 syms V
@@ -29,38 +44,38 @@ h = 4.1356e-15;
 q = 1.6e-19; % [C]
 e0 = 8.854e-14;
 sqef = sqrt(q*e0*es)*f;
-v_fermi_gr = 1e8; % [cm/sec]
+v_fermi_gr = p.Results.v_fermi_Gr; % [cm/sec]
 coefficients = {};
 coefficients_lim = [];
 
 if isa(N,'sym')
     syms Nsq
     coefficients{end+1} = 'Nsq';
-    coefficients_lim(end+1,:) = sqrt(p.Results.N);
+    coefficients_lim(end+1,:) = sqrt(p.Results.Doping_Lim);
 else 
     Nsq = sqrt(N);
 end
 
 if isa(Vb,'sym')
     coefficients{end+1} = 'Vb';
-    coefficients_lim(end+1,:) = p.Results.Vb;
+    coefficients_lim(end+1,:) = p.Results.Vb_Lim;
 end
 if isa(n,'sym')
     coefficients{end+1} = 'n';
-    coefficients_lim(end+1,:) = p.Results.n;
+    coefficients_lim(end+1,:) = p.Results.Ideality_Factor_Lim;
 end
 
 if isa(n0,'sym')
     syms n0sq
     coefficients{end+1} = 'n0sq';
-    coefficients_lim(end+1,:) = sqrt(p.Results.n0);
+    coefficients_lim(end+1,:) = sqrt(p.Results.Initial_Graphene_Doping_Lim);
 else 
     n0sq = sqrt(n0);
 end
 
 if isa(a,'sym')
     coefficients{end+1} = 'a';
-    coefficients_lim(end+1,:) = p.Results.a;
+    coefficients_lim(end+1,:) = p.Results.Graphene_Vdrop_Coeff_Lim;
 else
     a = h/4/sqrt(pi)*v_fermi_gr*Nsq*sqrt(es*e0/2/q)/n0sq;
 end
@@ -69,7 +84,7 @@ end
 cschot = A*sqef*Nsq/sqrt(2*n*(n*(Vb-k*T)-V+a*V));
 
 
-fo = fitoptions('Method','NonlinearLeastSquares','Lower',coefficients_lim(:,1),'Upper',coefficients_lim(:,3),'StartPoint',coefficients_lim(:,2),'Robust','Bisquare');
+fo = fitoptions('Method','NonlinearLeastSquares','Lower',coefficients_lim(:,1),'Upper',coefficients_lim(:,3),'StartPoint',coefficients_lim(:,2), FitProp{:});
 ft = fittype(char(cschot), 'independent',independent, 'coefficients',coefficients, 'options',fo);
 dvec = ~excludedata(x,y,'box',range) & ~isnan(y);
 Vbias = x(dvec);
@@ -114,6 +129,7 @@ fun = @(V) A.*sqrt(q.*es.*e0.*N./(2.*n.*(n.*(Vb-k*T)-V +a.*V)));
 span = [min(x), min(max(x), Vb-6*k*T)];
 if ~isempty(p.ResultsFirstOut)
     str = cellfun(@(c) FittedVarsCell(2,strcmpi(c, FittedVarsCell(1,:))),p.ResultsFirstOut);
+end
 end
 end
 
