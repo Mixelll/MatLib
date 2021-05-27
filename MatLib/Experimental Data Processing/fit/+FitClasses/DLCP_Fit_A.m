@@ -30,7 +30,7 @@ classdef DLCP_Fit_A < matlab.mixin.SetGet
             hold(Target, 'off')
         end
         function OK = Menu(o)
-            [~, OK, Pairs] = StructrureFieldsMenu(o,@parse_num_cell_sym2char,@parse_str2num_cell_sym,['Input Fit Parameters for model ' C_schot_fit2_B1('model','','','','','','','','')]);
+            [~, OK, Pairs] = StructrureFieldsMenu(o,@parse_num_cell_sym2char,@parse_str2num_cell_sym,'Input Fit Parameters');
             if OK
                 set(o, Pairs{:})
             end

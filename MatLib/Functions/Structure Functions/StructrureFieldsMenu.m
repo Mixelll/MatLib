@@ -22,7 +22,10 @@ else
     ParseInMenu = VararginRest{1};
     ParseOutMenu = VararginRest{2};
 end
-answer = inputdlg(Prompt,Title,[1 30+numel(Title)],ParseCells(Cells(2,:),ParseInMenu));
+opts.Resize = 'off';
+opts.WindowStyle = 'normal';
+opts.Interpreter = 'none';
+answer = inputdlg(Prompt,Title,[1 30+numel(Title)],ParseCells(Cells(2,:),ParseInMenu),opts);
 if ~isempty(answer)
     NewValues = ParseCells(answer,ParseOutMenu);
     Cells(2,:) = NewValues;

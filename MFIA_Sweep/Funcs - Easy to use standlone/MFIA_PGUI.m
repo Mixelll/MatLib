@@ -308,7 +308,7 @@ function popmenu_callbackFit1D(src,~, Plot1D)
     SV = src.Value;
     pop = src;
     SF = pop.String{SV};
-    [FitNames,FitHandles] = RegisteredNames('Fit Classes');
+    [FitNames,FitHandles] = PackageNames('FitClasses');
     PopFitNames = [{'Disable'} FitNames];
     if length(unique(lower(PopFitNames)))~=length(pop.String) || ~all(strcmpi(unique(lower(PopFitNames)), pop.String'))
         pop.String = PopFitNames;

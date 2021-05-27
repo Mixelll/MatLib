@@ -44,7 +44,7 @@ classdef CV_Scht_Fit_A < matlab.mixin.SetGet
             hold(Target, 'off')
         end
         function OK = Menu(o)
-            [~, OK, Pairs] = StructrureFieldsMenu(o,@parse_num_cell_sym2char,@parse_str2num_cell_sym,'Input Fit Parameters');
+            [~, OK, Pairs] = StructrureFieldsMenu(o,@parse_num_cell_sym2char,@parse_str2num_cell_sym,['Input Fit Parameters for model ' C_schot_fit_A('model','','','','','','','','')]);
             if OK
                 set(o, Pairs{:})
             end

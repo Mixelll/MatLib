@@ -84,15 +84,15 @@ end
 cschot = A*sqef*Nsq/sqrt(2*n*(n*(Vb-k*T)-V-a*sqrt(-V)));
 
 
-fo = fitoptions('Method','NonlinearLeastSquares','Lower',coefficients_lim(:,1),'Upper',coefficients_lim(:,3),'StartPoint',coefficients_lim(:,2),'Robust','Bisquare');
+fo = fitoptions('Method','NonlinearLeastSquares','Lower',coefficients_lim(:,1),'Upper',coefficients_lim(:,3),'StartPoint',coefficients_lim(:,2), FitProp{:});
 ft = fittype(char(cschot), 'independent',independent, 'coefficients',coefficients, 'options',fo);
-dvec = ~excludedata(x,y,'box',p.Results.range);
+dvec = ~excludedata(x,y,'box',range) & ~isnan(y);
 Vbias = x(dvec);
 C = y(dvec);
 [fitt, gof] = fit(Vbias,C*f,ft);
 
-if abs(p.Results.range(1)-Vbias(1))<0.1, x1 = p.Results.range(1); else, x1 = Vbias(1); end
-if abs(p.Results.range(2)-Vbias(end))<0.1, x2 = p.Results.range(2); else, x2 = Vbias(end); end
+if abs(range(1)-Vbias(1))<0.1, x1 = range(1); else, x1 = Vbias(1); end
+if abs(range(2)-Vbias(end))<0.1, x2 = range(2); else, x2 = Vbias(end); end
 box = [x1 x2];
 str=['Fit Range= '  num2str(box,2)  newline];
 FittedVarsCell = {};
@@ -129,6 +129,7 @@ fun = @(V) A.*sqrt(q.*es.*e0.*N./(2.*n.*(n.*(Vb-k*T)-V-a.*sqrt(-V))));
 span = [min(x), min(max(x), Vb-6*k*T)];
 if ~isempty(p.ResultsFirstOut)
     str = cellfun(@(c) FittedVarsCell(2,strcmpi(c, FittedVarsCell(1,:))),p.ResultsFirstOut);
+end
 end
 end
 
