@@ -11,4 +11,3 @@ for c = varargin
 [StrCells, Indices] = unique(StrCells);
 HandleCells = HandleCells(Indices);
 end
-

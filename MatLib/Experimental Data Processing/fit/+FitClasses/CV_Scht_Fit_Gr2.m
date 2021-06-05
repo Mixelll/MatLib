@@ -23,17 +23,21 @@ classdef CV_Scht_Fit_Gr2 < matlab.mixin.SetGet
         function Fit(o, x,y, Target, varargin)
             DefNameValueTemp = fn_struct2cell(C_schot_fit2_B2('parser','','','','','','','',''));
             DefNameValue = [DefNameValueTemp(4,:) ; DefNameValueTemp(2,:)];
-            LimChanged = @(x,name) ~isempty([DefNameValue{2,strcmpi(DefNameValue(1,:),name)}]) && ~isequal(x,[DefNameValue{2,strcmpi(DefNameValue(1,:),name)}]);
+%             LimChanged = @(x,name) ~isempty([DefNameValue{2,strcmpi(DefNameValue(1,:),name)}]) && ~isequal(x,[DefNameValue{2,strcmpi(DefNameValue(1,:),name)}]);
+            LimChanged = @(new,def) ~isempty(new) && ~isequal(new,def);
             Limits = {};
+            FN = fieldnames(o);
             for c = DefNameValue
-                if LimChanged(o.(c{2}), c{2}), Limits(end+1:end+2) = {o.(c{2}) o.(c{2})}; end
+                if any(strcmp(c{1},FN))
+                    if LimChanged(o.(c{1}), c{2}), Limits(end+1:end+2) = {c{1} o.(c{1})}; end
+                end
             end
-            [FitLeg, fun, span] = C_schot_fit2_B2(x,y,o.Area,o.RelativePermitivitty,o.Doping,o.Vb,o.IdealityFactor,o.Graphene_Doping,o.Graphene_Vdrop_Coeff,o.FitProperties,Limits{:});
+            [FitLeg, fun, span] = C_schot_fit2_B2(x,y,o.Area,o.RelativePermitivitty,o.Doping,o.Vb,o.IdealityFactor,o.Graphene_Vdrop_Coeff,o.Graphene_Doping,Limits{:});
             hold(Target, 'on')
             if ~isempty(varargin)
-                legend(varargin{:});
+                legend(Target, varargin{:});
             elseif isempty(isempty(Target.Legend))
-                legend('Measured Data');
+                legend(Target, 'Measured Data');
             end
             Lines = findobj(Target.Children, 'Type','Line');
             
@@ -42,9 +46,9 @@ classdef CV_Scht_Fit_Gr2 < matlab.mixin.SetGet
             else
                 fplot(fun, span, o.FitPlotProperties{:}, 'Parent',Target);
             end
-            legend([Target.Legend.String(1:end-1) {[FitLeg newline 'Model: ' Target.Legend.String{end}]}])
+            legend(Target,[Target.Legend.String(1:end-1) {[FitLeg newline 'Model: ' Target.Legend.String{end}]}])
             if ~isempty(o.LegendProp)
-                legend(o.LegendProp{:});
+                legend(Target, o.LegendProp{:});
             end
             hold(Target, 'off')
         end

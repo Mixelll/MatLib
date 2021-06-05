@@ -47,7 +47,7 @@ if D==3
             c2D_Lim = uicontrol('Parent',fig,'Style','checkbox', 'Units','normalized', 'value',0, 'max',1, 'min',0, 'String','Keep Axes Lim', 'FontSize',13, 'Position',[P2D(1) P2D(2)-0.07 0.08 0.02]);
             
             PopCall1D = @(src,cbdata) popmenu_callbackFit1D(src,cbdata, ax1D);
-            pf1D = uicontrol('Parent',fig, 'Style','popupmenu', 'string',[{'Disable'} RegisteredNames('Fit Classes')], 'FontSize',10, 'Units','normalized', 'Position', [P1D(1) P1D(2)-0.1 0.1 0.03], 'Callback',PopCall1D);
+            pf1D = uicontrol('Parent',fig, 'Style','popupmenu', 'string',[{'Disable'} PackageNames('FitClasses')], 'FontSize',10, 'Units','normalized', 'Position', [P1D(1) P1D(2)-0.1 0.1 0.03], 'Callback',PopCall1D);
             
             SliderCallFromPop2D = @(src,cbdata,AxisString) slider_callback2D(src,cbdata,ax1D,AxisString,ax2D,c1D_Lim,c1D_Hold,pf1D);
             s2D = uicontrol('Parent',fig,'Style','slider', 'Units','normalized', 'Callback', @(src,cbdta) SliderCallFromPop2D(src,cbdta,PopStrVal{3,2}),...
@@ -141,7 +141,7 @@ elseif D==2
             c1D_Hold = uicontrol('Parent',fig,'Style','checkbox', 'Units','normalized', 'value',0, 'max',1, 'min',0, 'String','Hold Plot', 'FontSize',13, 'Position',[P1D(1)+0.1 P1D(2)-0.07 0.08 0.02]);
             
             PopCall1D = @(src,cbdata) popmenu_callbackFit1D(src,cbdata, ax1D);
-            pf1D = uicontrol('Parent',fig, 'Style','popupmenu', 'string',[{'Disable'} RegisteredNames('Fit Classes')], 'FontSize',10, 'Units','normalized', 'Position', [P1D(1) P1D(2)-0.1 0.1 0.03], 'Callback',PopCall1D);
+            pf1D = uicontrol('Parent',fig, 'Style','popupmenu', 'string',[{'Disable'} PackageNames('Fit Classes')], 'FontSize',10, 'Units','normalized', 'Position', [P1D(1) P1D(2)-0.1 0.1 0.03], 'Callback',PopCall1D);
             
             SliderCallFromPop2D = @(src,cbdata,AxisString) slider_callback2D(src,cbdata,ax1D,AxisString,ax2Dpc,c1D_Lim,c1D_Hold,pf1D);
             s2D = uicontrol('Parent',fig,'Style','slider', 'Units','normalized', 'Callback', @(src,cbdta) SliderCallFromPop2D(src,cbdta,PopStrVal{3,2}),...
@@ -365,7 +365,12 @@ end
 function ExportPlotCallBack(~, ~, Plot1D)
     prompt = {'Enter plot number:', 'Enter legend:', 'Enter font size:', 'Enter plot properies:', 'Enter Range:', 'Copy As is:'};
     dlgtitle = 'Add Plot to Target Figure';
-    [Plot1D.Parent.UserData.ExportPlotProperties, OK] = StructrureFieldsMenu(Plot1D.Parent.UserData.ExportPlotProperties, @parse_num_cell_sym2char, @parse_str2num_cell, prompt, dlgtitle);
+    try
+        [Plot1D.Parent.UserData.ExportPlotProperties, OK] = StructrureFieldsMenu(Plot1D.Parent.UserData.ExportPlotProperties, @parse_num_cell_sym2char, @parse_str2num_cell, prompt, dlgtitle);
+    catch
+        AddProperties(Plot1D.Parent);
+        [Plot1D.Parent.UserData.ExportPlotProperties, OK] = StructrureFieldsMenu(Plot1D.Parent.UserData.ExportPlotProperties, @parse_num_cell_sym2char, @parse_str2num_cell, prompt, dlgtitle);
+    end
     EPP = Plot1D.Parent.UserData.ExportPlotProperties;
     if OK && ~isempty(EPP.Plot_Number)
         Legend = EPP.Legend;

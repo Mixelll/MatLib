@@ -6,12 +6,12 @@ if isempty(in)
     out = [];
 elseif in(1)=='{' && in(end)=='}'
     ins = in(2:end-1);
-    if ~isempty(ins) && (any(regexp(ins,'([^\d\,\''](?=[^\'']))|((?<=[^\''])[^\d\,\''])')) || (~any(strfind(ins,',')) && ins(1)~='''' && ~any(str2num(ins))))
+    if ~isempty(ins) && (any(regexp(in,'([a-zA-Z](?=[^''a-zA-Z]))|((?<=[^''a-zA-Z])[a-zA-Z])')) || (~any(strfind(ins,',')) && ins(1)~='''' && ~any(str2num(ins))))
         out = strsplit(ins,',');
         for ic = 1:numel(out)
             Temp = str2num(out{ic});
             if ~isempty(Temp)
-                out{ic} = Temp;
+                out{ic} = strtrim(Temp);
             end
         end  
     else

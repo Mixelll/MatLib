@@ -103,9 +103,9 @@ else
     return
 end
 
-for i=1:nsub
+ for i=1:nsub
     a = Y{i};
-    if isstruct(a) || isobject(a) && ~islogical(a)
+    if isstruct(a) || isobject(a) && ~islogical(a) && ~isa(a, 'sym')
         if length(a)==1
             result_cell = rec_struct2cell(subnames{i},a,result_cell, ignore, write);
         else

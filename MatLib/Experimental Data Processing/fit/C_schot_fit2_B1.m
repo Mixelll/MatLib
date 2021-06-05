@@ -1,4 +1,16 @@
 function [str, fun, span, FittedVarsCell] = C_schot_fit2_B1(x,y,A,es,N,Vb,n,a,n0,varargin)
+if ~isempty(x) && ~isempty(y)
+    if size(x,2)>size(x,1)
+        x = x.';
+    end
+    if size(y,2)>size(y,1)
+        y = y.';
+    end
+    dvec = ~isnan(y) & ~isnan(x);
+    x = x(dvec);
+    y = y(dvec);
+end
+
 p = inputParser;
 p.KeepUnmatched=true;
 p.addParameter('Range', [-inf inf], @isnumeric);
@@ -86,7 +98,7 @@ cschot = A*sqef*Nsq/sqrt(2*n*(n*(Vb-k*T)-V+a*V));
 
 fo = fitoptions('Method','NonlinearLeastSquares','Lower',coefficients_lim(:,1),'Upper',coefficients_lim(:,3),'StartPoint',coefficients_lim(:,2), FitProp{:});
 ft = fittype(char(cschot), 'independent',independent, 'coefficients',coefficients, 'options',fo);
-dvec = ~excludedata(x,y,'box',range) & ~isnan(y);
+dvec = ~excludedata(x,y,'box',range);
 Vbias = x(dvec);
 C = y(dvec);
 [fitt, gof] = fit(Vbias,C*f,ft);
@@ -127,8 +139,8 @@ str = [str ' R^{2}=' num2str(gof.rsquare,3) ];
 FittedVarsCell(:, end+1) = {'R2'; gof.rsquare; 'R^{2}'};
 fun = @(V) A.*sqrt(q.*es.*e0.*N./(2.*n.*(n.*(Vb-k*T)-V +a.*V)));
 span = [min(x), min(max(x), Vb-6*k*T)];
-if ~isempty(p.ResultsFirstOut)
-    str = cellfun(@(c) FittedVarsCell(2,strcmpi(c, FittedVarsCell(1,:))),p.ResultsFirstOut);
+if ~isempty(p.Results.FirstOut)
+    str = cellfun(@(c) FittedVarsCell(2,strcmpi(c, FittedVarsCell(1,:))),p.Results.FirstOut);
 end
 end
 end

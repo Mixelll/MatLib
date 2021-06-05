@@ -17,7 +17,7 @@ classdef CV_Scht_Fit_A < matlab.mixin.SetGet
 	methods 
         function Fit(o, x,y, Target, varargin)
             LimDef = [{'es'; [0 11.68 inf]} {'N'; [0 1e17 inf]} {'Vb'; [0 0.5 10]} {'n'; [0.01 1 100]}];
-            LimChanged = @(x,name) any(x~=LimDef{2,strcmpi(LimDef(1,:),name)});
+            LimChanged = @(x,name) any(x~=LimDef{2,strcmp(LimDef(1,:),name)});
             Limits = {};
             if LimChanged(o.RelativePermitivitty_Limits, 'es'), Limits(end+1:end+2) = {'es' o.RelativePermitivitty_Limits}; end
             if LimChanged(o.Doping_Limits, 'N'), Limits(end+1:end+2) = {'N' o.Doping_Limits}; end
@@ -26,9 +26,9 @@ classdef CV_Scht_Fit_A < matlab.mixin.SetGet
             [FitLeg, fun, span] = C_schot_fit_A(x,y,o.Range,o.Area,o.RelativePermitivitty,o.Doping,o.Vb,o.IdealityFactor,o.FitProperties,Limits{:});
             hold(Target, 'on')
             if ~isempty(varargin)
-                legend(varargin{:});
+                legend(Target, varargin{:});
             elseif isempty(isempty(Target.Legend))
-                legend('Measured Data');
+                legend(Target, 'Measured Data');
             end
             Lines = findobj(Target.Children, 'Type','Line');
             
@@ -37,9 +37,9 @@ classdef CV_Scht_Fit_A < matlab.mixin.SetGet
             else
                 fplot(fun, span, o.FitPlotProperties{:}, 'Parent',Target);
             end
-            legend([Target.Legend.String(1:end-1) {[FitLeg newline 'Model: ' Target.Legend.String{end}]}])
+            legend(Target,[Target.Legend.String(1:end-1) {[FitLeg newline 'Model: ' Target.Legend.String{end}]}])
             if ~isempty(o.LegendProp)
-                legend(o.LegendProp{:});
+                legend(Target, o.LegendProp{:});
             end
             hold(Target, 'off')
         end

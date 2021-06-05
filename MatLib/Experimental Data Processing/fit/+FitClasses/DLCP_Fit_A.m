@@ -26,7 +26,7 @@ classdef DLCP_Fit_A < matlab.mixin.SetGet
             if ~isempty(o.LegendProp)
                 legend(o.LegendProp{:});
             end
-            legend([Target.Legend.String(1:end-1) {[FitLeg newline 'Model: ' Target.Legend.String{end}]}])
+            legend(Target,[Target.Legend.String(1:end-1) {[FitLeg newline 'Model: ' Target.Legend.String{end}]}])
             hold(Target, 'off')
         end
         function OK = Menu(o)
