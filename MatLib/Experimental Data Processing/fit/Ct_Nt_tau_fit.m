@@ -5,6 +5,11 @@ end
 dvec = ~isnan(y);
 x = x(dvec);
 y = y(dvec);
+if isempty(C0)
+    C0Frac = 100;
+    C0 = mean(y(end-round(length(y)/C0Frac):end));
+end
+
 if ~isempty(varargin)
     if isa(varargin{1}, 'numeric')
         fit_cond_val = cell2mat(varargin(1:2:end)');

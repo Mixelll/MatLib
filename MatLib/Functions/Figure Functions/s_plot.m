@@ -318,5 +318,5 @@ for ax = Ax
     i = i+1;
 end
 
-
+set(Fig,'LooseInset',get(gca,'TightInset'))
 end
