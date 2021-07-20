@@ -1,7 +1,7 @@
 %% Perform a frequency/test_signal (amplitude)/bias_voltage (offset) sweep and gather demodulator data.
 %
 % ----- Note that there are two name sets depending on context: 
-% impedance analyzer context (sweeper context) - frequency (frequency),
+% impedance analyzer context (inside parentheses sweeper and lock-in tab context) - frequency (frequency),
 % test_signal (amplitude), bias_voltage (offset) -----
 %
 % ----- NOTE Please ensure that the ziDAQ folders 'Driver' and 'Utils' are in your
@@ -11,18 +11,17 @@
 % >>> ziAddPath;
 %
 clear
+%#############################          INPUT PARAMETERS AND SETTINGS BELOW       #############################  
+
 %  ----- MFIA ID -----
 device_id = 'dev5168';
 
 %  ----- Sample name and measurement number -----
 SampleName = 'IB2 BL 100um 10';
 CurrentMeasID = 'DLCP4T Forward1';
-StartTime = datestr(now, 'yyyy-mm-dd HH-MM');
 
 %  ----- Save path -----
 SavePath = ['C:\Users\' getenv('USERNAME') '\Google Drive\MATLAB Drive\vars'];
-RealSavePath = [SavePath '\' SampleName '\' SampleName ' ' CurrentMeasID];
-DesiredOrder = {'offset','frequency', 'amplitude'};
 
 %  ----- create slice planes  -----
 slice_planes = {};
@@ -32,24 +31,27 @@ slice_planes(:,end+1) = {'offset'; [-0.5]};
 
 % ----- Selected data to read (grid = sweep parameter)----
 % 
-% read_param_struct.demod.grid = true;
-read_param_struct.demod.r = false;
-read_param_struct.demod.phase = false;
-read_param_struct.impedance.grid = true;
-read_param_struct.impedance.param0 = true;
-read_param_struct.impedance.param1 = true;
-read_param_struct.impedance.absz = true;
-read_param_struct.impedance.phasez = true;
+% EXAMPLE read_param_struct.demod.grid = true; % EXAMPLE
+MFIA.demod.r = false;
+MFIA.demod.phase = false;
+MFIA.impedance.grid = true;
+MFIA.impedance.param0 = true;
+MFIA.impedance.param1 = true;
+MFIA.impedance.absz = false;
+MFIA.impedance.phasez = false;
 
 
 %  ----- Sweep by Frequency and iterate over AC amplitude and offset -----
 SweepOrder = {'frequency','amplitude','offset'};
-freq_xmapping = {'freq_xmapping', 1}; % set 0 for linear distribution between start and stop, set 1 for log distribution
-start_frequency = 100; stop_frequency = 500e3; pts_frequency = 100; % Hz
-start_amplitude = 0.01; stop_amplitude = 0.15; pts_amplitude = 57; % V
-start_offset = 1; stop_offset = 0; pts_offset = 21; % V
+DesiredOtputOrder = {'offset','frequency', 'amplitude'};
 
-plt_log_freq = true; % set to plot sweep/desired order with logarithmic frequency values
+freq_xmapping = {'freq_xmapping', 1}; % set 0 for linear distribution between start and stop, set 1 for log distribution
+% EXAMPLE Start_Value = ......., Stop_Value = ......, Number_of_Points_for_Sweep = EXAMPLE
+start_frequency = 100; stop_frequency = 500e3; pts_frequency = 100; % Frequency [Hz]
+start_amplitude = 0.01; stop_amplitude = 0.15; pts_amplitude = 57; % AC Amplitude [V]
+start_offset = 1; stop_offset = 0; pts_offset = 21; % Bias Voltage [V]
+
+plt_log_freq = true; % set to plot sweep/desired order with logarithmically spaced frequency points
 plot_desired_order = true;
 plot_sweep_order = true;
 plt_cmds = {};
@@ -67,6 +69,10 @@ DC_sweep_range = [-1.5 1]; % Vbias [V]
 DC_pts = 251; % sweep points
 DC_hysteresis = true; % Include a reverse sweep
 
+%#############################          Don't touch      #############################  
+StartTime = datestr(now, 'yyyy-mm-dd HH-MM');
+RealSavePath = [SavePath '\' SampleName '\' SampleName ' ' CurrentMeasID];
+%#############################                           ############################# 
 %% CHANGE SETTINGS (uncomment and change values)
 
 % ==================== Overwite Defaults ====================
@@ -74,13 +80,16 @@ overwrite_defaults = {}; % don't touch
 SetByRange = {}; % don't touch
 additional_settings = struct; % don't touch
 
+%#############################      enable_default -  defaults set by Michael      #############################
     %  ----- BY SETTING THIS, THE INTERNAL SCRIPT DEFAULTS WILL OVERWRITE LABONE GUI INPUT
-    % THE INTERNAL DEFAULTS ARE INSIDE MFIA_freq_amp_bias_sweep.
+    % THE INTERNAL DEFAULTS ARE INSIDE MFIA_freq_amp_bias_sweep function (set "enable_default" to 1 to use them).
     % VALUES YOU UN-COMMENT BELOW WILL OVERWRITE REGARDLESS of "enable_default" -----
 additional_settings.enable_default = true; % defaults set by Michael
+%#############################                                                  #############################
+
 % ==================== Experiment-dictated conditions on output ====================
     % Enable DLCP condition on offset (Vbias): ActualOffset = InputOffset - Amplitude. -----
-additional_settings.output.DLCP = true;
+additional_settings.output.DLCP = false;
 % ==================== Graph and text display settings ====================
     %  ----- Graphs -----
 % additional_settings.display.graph.disp = true;
@@ -94,11 +103,12 @@ additional_settings.output.DLCP = true;
 additional_settings.display.graph.save.if = true;
 additional_settings.display.graph.save.path = RealSavePath;
 % ==================== MF and IA settings ====================
-    %  ----- IA precision -> measurement speed: 0 - low->fast, 1 - high->medium,
+    %   EXAMPLE ----- Setting_Value - IA_precision -> measurement_speed: EXAMPLE
+    % 0 - low->fast, 1 - high->medium,
     % 2 - very high->slow -----
 overwrite_defaults(:,end+1) = {'IA_precision'; 2};
 
-    %  ----- Set IA parameter extraction model (from impedance).  -----
+    %  ----- Set IA parameter extraction model (like in impedance analyzer tab in LabOne).  -----
     % 0 - Rp Cp, 1 - Rs Cs, 2 - Rs Ls, 3 - G B, 4 - D Cs,
     % 5 -  Qs Cs, 6 - D Ls, 7 - Q Ls, 8 - Rp Lp, 9 - D Cp
 % overwrite_defaults(:,end+1) = {'model'; 0};
@@ -165,6 +175,7 @@ overwrite_defaults(:,end+1) = {'current_range'; 1e-4};
     %  ----- Match sweeper accuracy and averaging settings to same settings in the IA. -----
 sweep_precision = struct('sweep_inaccuracy',0.01, 'averaging_sample',20, 'averaging_time',0.1, ... % don't touch
 'averaging_time_constant',15, 'bandwidth',10, 'max_bandwidth',100, 'omega_suppression', 80); % don't touch
+%#############################          Don't touch      #############################  
 if any(strcmpi(overwrite_defaults(1,:), 'IA_precision'))
     switch overwrite_defaults{2, strcmpi(overwrite_defaults(1,:), 'IA_precision')}
     case 0
@@ -193,6 +204,9 @@ if any(strcmpi(overwrite_defaults(1,:), 'IA_precision'))
         sweep_precision.omega_suppression = 120;
     end
 end
+%#############################                           ############################# 
+
+%#############################          CAN TOUCH        #############################  
 
     %  ----- overwrite sweep precision. -----
 % sweep_precision.sweep_inaccuracy = 0.01;
@@ -202,6 +216,7 @@ end
 % sweep_precision.bandwidth = 10;
 % sweep_precision.max_bandwidth = 100;
 % sweep_precision.omega_suppression = 80;
+%#############################                           #############################  
 
     %  ----- Demodulator filter settling inaccuracy defining the wait time between a sweep parameter change and
     % recording of the next sweep point. The settling time is calculated as the time required to attain the specified
@@ -252,6 +267,10 @@ overwrite_defaults(:,end+1) = {'omega_suppression'; sweep_precision.omega_suppre
     %  ----- For sweeper: Selects the filter roll off to use for the sweep in fixed bandwidth mode. Range between 6 dB/oct and 48 dB/ oct. -----
 % overwrite_defaults(:,end+1) = {'sweep_LFP_order'; 8};
 
+%#############################          END OF USER INPUT           ############################# 
+%#############################          END OF USER INPUT           ############################# 
+%#############################          END OF USER INPUT           #############################
+
 %%  Check Directory and rename if needed
 if isnumeric(CurrentMeasID)
     CurrentMeasID = num2str(CurrentMeasID);
@@ -297,15 +316,15 @@ end
     'stop_frequency', stop_frequency, 'pts_frequency', pts_frequency, 'start_amplitude', start_amplitude, 'stop_amplitude', stop_amplitude,...
     'pts_amplitude', pts_amplitude, 'start_offset', start_offset, 'stop_offset', stop_offset, 'pts_offset', pts_offset, freq_xmapping{:});
 
-[select_data_sweep_order_struct_vec, full_data_sweep_order_struct_vec, MFIA_Settings] = MFIA_freq_amp_bias_sweep(device_id, additional_settings, SetByRange, SweepOrder, sweep_range, sweep_pts, frequency_vec, amplitude_vec, offset_vec, read_param_struct, overwrite_defaults{:});
+[select_data_sweep_order_struct_vec, full_data_sweep_order_struct_vec, MFIA_Settings] = MFIA_freq_amp_bias_sweep(device_id, additional_settings, SetByRange, SweepOrder, sweep_range, sweep_pts, frequency_vec, amplitude_vec, offset_vec, MFIA, overwrite_defaults{:});
 
 if DC_Measure
     MFIA_DC(device_id, additional_settings, DC_sweep_range, DC_pts, DC_read_param_struct, RealSavePath, DC_hysteresis, overwrite_defaults{:});
 end
 %%  EXTRACT AND RESHAPE DATA 
-[select_data_3D_desired_order, select_data_3D_sweep_order] = MFIA_data_reshape_3D(select_data_sweep_order_struct_vec, DesiredOrder, SweepOrder, pts_frequency, pts_amplitude, pts_offset, frequency_vec, amplitude_vec, offset_vec);
+[select_data_3D_desired_order, select_data_3D_sweep_order] = MFIA_data_reshape_3D(select_data_sweep_order_struct_vec, DesiredOtputOrder, SweepOrder, pts_frequency, pts_amplitude, pts_offset, frequency_vec, amplitude_vec, offset_vec);
 select_data_3D_sweep_order.order = SweepOrder;
-select_data_3D_desired_order.order = DesiredOrder;
+select_data_3D_desired_order.order = DesiredOtputOrder;
 
 select_data_3D_sweep_order.settings = MFIA_Settings;
 select_data_3D_desired_order.settings = MFIA_Settings;
@@ -314,27 +333,27 @@ select_data_3D_sweep_order.model = MFIA_Settings.str.model;
 select_data_3D_desired_order.model = MFIA_Settings.str.model;
 
 eval(['select_data_3D_sweep_order_' sweep_order_string(SweepOrder) '=select_data_3D_sweep_order;'])
-eval(['select_data_3D_desired_order_' sweep_order_string(DesiredOrder) '=select_data_3D_desired_order;'])
-eval(['full_struct_vec_' sweep_order_string(DesiredOrder) '=full_data_sweep_order_struct_vec;'])
+eval(['select_data_3D_desired_order_' sweep_order_string(DesiredOtputOrder) '=select_data_3D_desired_order;'])
+eval(['full_struct_vec_' sweep_order_string(DesiredOtputOrder) '=full_data_sweep_order_struct_vec;'])
 
 if ~exist(RealSavePath, 'dir')
     mkdir(RealSavePath)
 end
 %%  SAVE DATA
 save(RealSavePath, ['select_data_3D_sweep_order_' sweep_order_string(SweepOrder)],...
-    ['select_data_3D_desired_order_' sweep_order_string(DesiredOrder)], ['full_struct_vec_' sweep_order_string(DesiredOrder)]);
+    ['select_data_3D_desired_order_' sweep_order_string(DesiredOtputOrder)], ['full_struct_vec_' sweep_order_string(DesiredOtputOrder)]);
 save([RealSavePath '\' SampleName ' ' CurrentMeasID ' ' StartTime], ['select_data_3D_sweep_order_' sweep_order_string(SweepOrder)],...
-    ['select_data_3D_desired_order_' sweep_order_string(DesiredOrder)], ['full_struct_vec_' sweep_order_string(DesiredOrder)]);
+    ['select_data_3D_desired_order_' sweep_order_string(DesiredOtputOrder)], ['full_struct_vec_' sweep_order_string(DesiredOtputOrder)]);
 %%  PLOT DATA
 
 if plt_log_freq
-    DesiredOrder{contains(DesiredOrder, 'frequency')} = 'log_frequency';
+    DesiredOtputOrder{contains(DesiredOtputOrder, 'frequency')} = 'log_frequency';
     SweepOrder{contains(SweepOrder, 'frequency')} = 'log_frequency';
     slice_planes(:,contains(slice_planes(1,:), 'frequency')) = {'log_frequency'; log10(slice_planes{2,contains(slice_planes(1,:), 'frequency')})};
 end
     
 if plot_desired_order
-    plot_data3D(select_data_3D_desired_order, DesiredOrder, slice_planes, plt_cmds);
+    plot_data3D(select_data_3D_desired_order, DesiredOtputOrder, slice_planes, plt_cmds);
 end
 if plot_sweep_order
     plot_data3D(select_data_3D_sweep_order, SweepOrder, slice_planes, plt_cmds);
