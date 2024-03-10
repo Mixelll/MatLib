@@ -30,7 +30,10 @@ if ~isempty(fieldnames(updated_struct))
                 end
             else
                 if ~isempty(original_cell) && any(field_cmp)
+                    try
                     eval(['original_struct' original_cell{3,field_cmp} '=' c{1} ';'])
+                    catch
+                    end
                 else
                     eval(['original_struct' c{3} '=' c{1} ';'])
                 end

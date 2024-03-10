@@ -1,5 +1,6 @@
 classdef CV_Scht_Fit_A < matlab.mixin.SetGet
 	properties
+        Temperature = 295
         Range = [-inf inf]
         Area = (150e-4)^2 * pi
         RelativePermitivitty = 11.68
@@ -23,7 +24,7 @@ classdef CV_Scht_Fit_A < matlab.mixin.SetGet
             if LimChanged(o.Doping_Limits, 'N'), Limits(end+1:end+2) = {'N' o.Doping_Limits}; end
             if LimChanged(o.Vb_Limits, 'Vb'), Limits(end+1:end+2) = {'Vb' o.Vb_Limits}; end
             if LimChanged(o.IdealityFactor_Limits, 'n'), Limits(end+1:end+2) = {'n' o.IdealityFactor_Limits}; end
-            [FitLeg, fun, span] = C_schot_fit_A(x,y,o.Range,o.Area,o.RelativePermitivitty,o.Doping,o.Vb,o.IdealityFactor,o.FitProperties,Limits{:});
+            [FitLeg, fun, span] = C_schot_fit_A(x, y, o.Range, o.Area, o.RelativePermitivitty, o.Doping, o.Vb, o.IdealityFactor, o.Temperature, o.FitProperties,Limits{:});
             hold(Target, 'on')
             if ~isempty(varargin)
                 legend(Target, varargin{:});
@@ -44,7 +45,7 @@ classdef CV_Scht_Fit_A < matlab.mixin.SetGet
             hold(Target, 'off')
         end
         function OK = Menu(o)
-            [~, OK, Pairs] = StructrureFieldsMenu(o,@parse_num_cell_sym2char,@parse_str2num_cell_sym,['Input Fit Parameters for model ' C_schot_fit_A('model','','','','','','','','')]);
+            [~, OK, Pairs] = StructrureFieldsMenu(o,@parse_num_cell_sym2char,@parse_str2num_cell_sym,['Input Fit Parameters for model ' C_schot_fit_A('model','','','','','','','','', '')]);
             if OK
                 set(o, Pairs{:})
             end

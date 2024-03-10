@@ -25,7 +25,7 @@ end
 opts.Resize = 'off';
 opts.WindowStyle = 'normal';
 opts.Interpreter = 'none';
-answer = inputdlg(Prompt,Title,[1 30+numel(Title)],ParseCells(Cells(2,:),ParseInMenu),opts);
+answer = inputdlg(Prompt, Title, [1 30+numel(Title)],ParseCells(Cells(2,:),ParseInMenu), opts);
 if ~isempty(answer)
     NewValues = ParseCells(answer,ParseOutMenu);
     Cells(2,:) = NewValues;

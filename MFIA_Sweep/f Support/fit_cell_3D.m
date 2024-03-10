@@ -43,9 +43,9 @@ StartTime = datestr(now, 'yyyy-mm-dd HH-MM-SS');
 d123 = 1:3;
 ftAxPos = strcmpi(AxesCell(1,:),fit_axis);
 perm_vec = [d123(ftAxPos) d123(~ftAxPos)];
-AxesCell(2,:) = cellfun(@(c) permute(c,perm_vec), AxesCell(2,:) , 'UniformOutput',false);
+AxesCell(2,:) = cellfun(@(c) permute(c, perm_vec), AxesCell(2,:) , 'UniformOutput', false);
 AxesCell(:,:) = AxesCell(:,perm_vec);
-DataCell(2,:) = cellfun(@(c) permute(c,perm_vec), DataCell(2,:) , 'UniformOutput',false);
+DataCell(2,:) = cellfun(@(c) permute(c, perm_vec), DataCell(2,:) , 'UniformOutput', false);
 
 % Create axes matrices
 FitAxMat = AxesCell{2,1};
@@ -89,7 +89,7 @@ for cd = DataCell
                 disp(fit_progress)
             end
             if ~isempty(p.Results.plot_fit)
-                ax = s_plot(FitAxMat(:,j,k), cd_mat(:,j,k), plot_properties, plot_commands, [p.Results.title ' ' cd{4} newline strrep(fit_progress_title,'_','\_')], fit_str, '', AxesCell{3,1}, cd{3}, 15, plot_func, ~plot_visible, plot_screensize);
+                ax = s_plot(FitAxMat(:,j,k), cd_mat(:,j,k), plot_properties, plot_commands, [p.Results.title ' ' cd{4} newline strrep(fit_progress_title,'_','\_')], fit_str, '', AxesCell{3,1}, cd{3}, 15, plot_func, ~plot_visible, plot_screensize, 0);
                 if ~isempty(OutFitFunc)
                     hold(ax(1),'on');
                     fplot(OutFitFunc, span)

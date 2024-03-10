@@ -1,4 +1,5 @@
 % fileprop = {'txt', '	', [0 0]}; %{'format', 'delimeter', [row_shift column_shift OPTIONAL_to_row OPTIONAL_to_column]}
+root_path = 'My Drive\MATLAB Drive\vars';
 
 CV_path = ['C:\Users\' getenv('USERNAME') '\Google Drive\EE MSc\200413 gr-Si Schottky b1\2T Left from center\all CV\try'];
 Ct_path = 'C:\Users\admin2\Google Drive\MATLAB Drive\vars\B5 b7 150um 4\B5 b7 150um 4 DLTS1Up';

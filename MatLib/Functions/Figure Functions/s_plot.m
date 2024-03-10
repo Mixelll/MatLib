@@ -102,7 +102,7 @@ if CellFlag
                     PlotType(C(:,1), C(:,2), PlotProperties{:}, 'Parent',Ax(1));
                 end
             elseif isgraphics(C)
-                copyobj(C,Ax(1))
+                copyobj(C, Ax(1))
                 if ~isempty(C.UserData)
                     eval(['Ax(1).Children(1).' C.UserData]);
                 end
@@ -318,5 +318,5 @@ for ax = Ax
     i = i+1;
 end
 
-set(Fig,'LooseInset',get(gca,'TightInset'))
+    % set(Fig,'LooseInset',get(gca,'TightInset'))
 end

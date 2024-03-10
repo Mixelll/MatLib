@@ -1,9 +1,10 @@
 function [] = IV_gr_si_schot_reverse()
 
 
-fileprop = {'txt', '	', [0 0]}; %{'format', 'delimeter', [row_shift column_shift OPTIONAL_to_row OPTIONAL_to_column]}
-path = 'C:\Users\admin2\Google Drive\EE MSc\200413 gr-Si Schottky b1\2T Left from center\all IV\try';
-vladpath = 'C:\Users\admin2\Google Drive\EE MSc\In with the New\ppt\Vlad';
+% fileprop = {'mat', '	', [0 0]}; %{'format', 'delimeter', [row_shift column_shift OPTIONAL_to_row OPTIONAL_to_column]}
+FileType = 'mat';
+path = 'C:\Users\user\My Drive\MATLAB Drive\vars\B5 b5 150um 14\B5 b5 150um 14 Vacuum1\DC\IV.mat';
+% vladpath = 'C:\Users\admin2\Google Drive\EE MSc\In with the New\ppt\Vlad';
 %path = vladpath;
 index = '';
 sortby = '';
@@ -14,11 +15,17 @@ plotop1 = [0 1]; % [plot, plot single in one window, plot single in multiple win
 plotop2 = [1 0 0 0]; % [plot as is, plot ref substracted, plot dc substracted, plot integral]
 
 
-
-[VIcells, ref] = data_folder_read(path, fileprop{:}, sortby, index, saveop); %(path, {type, delimeter, RC}, sortby, ind)
+if FileType=='mat'
+    VIcells = load(path);
+    VIcells_fields = fieldnames(VIcells);
+    VIcells = VIcells.(VIcells_fields{1});
+    VIcells = [VIcells.sweep.V', VIcells.sweep.I'];
+    ref = 0;
+else
+    [VIcells, ref] = data_folder_read(path, sortby, index, 0, saveop, 'FileType', FileType); %(path, sortby, ind, tparam, saveop)
 % sortby (array): sort the files by the numbers that are located (it searches) in the positions you enter in sortby
 % ind (int or str): for example if your files end with a number *ind* and some string *str* after it. input in formet 'indstr' e.g. '5)'. write 'm' instead of ind
-
+end
 % INPUT ALL VALUES  in CM "
 syms N vfb Ar VB n V a n0
 n0=1e12;

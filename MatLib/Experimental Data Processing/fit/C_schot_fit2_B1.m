@@ -1,4 +1,4 @@
-function [str, fun, span, FittedVarsCell] = C_schot_fit2_B1(x,y,A,es,N,Vb,n,a,n0,varargin)
+function [str, fun, span, FittedVarsCell] = C_schot_fit2_B1(x, y ,A , es, N, Vb, n, a, n0, varargin)
 if ~isempty(x) && ~isempty(y)
     if size(x,2)>size(x,1)
         x = x.';
@@ -14,7 +14,7 @@ end
 p = inputParser;
 p.KeepUnmatched=true;
 p.addParameter('Range', [-inf inf], @isnumeric);
-p.addParameter('T', 296, @isnumeric);
+p.addParameter('T', 295, @isnumeric);
 p.addParameter('f', 10^ceil(abs(log10(1/mean(y)))), @isnumeric);
 p.addParameter('Doping_Lim',[0 1e17 inf], @isnumeric);
 p.addParameter('Vb_Lim',[0 0.5 10], @isnumeric);

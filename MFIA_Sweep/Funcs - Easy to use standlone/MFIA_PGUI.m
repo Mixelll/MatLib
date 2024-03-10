@@ -1,4 +1,7 @@
 function [figs] = MFIA_PGUI(SubPlots,D)
+FitClassesName = 'FitClasses';
+Colors = ["#0072BD", "#D95319", "#EDB120", "#7E2F8E", "#77AC30", "#4DBEEE",	"#A2142F",
+          "#FF0000", "#00FF00", "#0000FF", "#00FFFF", "#FF00FF", "#FFFF00", "#000000"];
 clear 'DataFigureHandles'
 if ~isgraphics(SubPlots)
     [~, SubPlots, ~,~,~,D] = process_plot_struct_data3D(SubPlots,[],[]);
@@ -18,7 +21,7 @@ if D==3
             ax2D = subplot(1,3,2); 
             ax1D = subplot(1,3,3);
 
-            copyobj(get(SubPlots(i,j), 'Children'),ax3D)
+            copyobj(get(SubPlots(i,j), 'Children'), ax3D)
             ax3D = update_structure(ax3D, SubPlots(i,j), 'ignore',{'Parent'}, 'new', true);
             fig.UserData.type = ax3D.UserData.type;
             ax2D.UserData.type = ax3D.UserData.type;
@@ -47,11 +50,11 @@ if D==3
             c2D_Lim = uicontrol('Parent',fig,'Style','checkbox', 'Units','normalized', 'value',0, 'max',1, 'min',0, 'String','Keep Axes Lim', 'FontSize',13, 'Position',[P2D(1) P2D(2)-0.07 0.08 0.02]);
             
             PopCall1D = @(src,cbdata) popmenu_callbackFit1D(src,cbdata, ax1D);
-            pf1D = uicontrol('Parent',fig, 'Style','popupmenu', 'string',[{'Disable'} PackageNames('FitClasses')], 'FontSize',10, 'Units','normalized', 'Position', [P1D(1) P1D(2)-0.1 0.1 0.03], 'Callback',PopCall1D);
+            pf1D = uicontrol('Parent',fig, 'Style','popupmenu', 'string',[{'Disable'} PackageNames(FitClassesName)], 'FontSize',10, 'Units','normalized', 'Position', [P1D(1) P1D(2)-0.1 0.1 0.03], 'Callback',PopCall1D);
             
             SliderCallFromPop2D = @(src,cbdata,AxisString) slider_callback2D(src,cbdata,ax1D,AxisString,ax2D,c1D_Lim,c1D_Hold,pf1D);
             s2D = uicontrol('Parent',fig,'Style','slider', 'Units','normalized', 'Callback', @(src,cbdta) SliderCallFromPop2D(src,cbdta,PopStrVal{3,2}),...
-                'value',mean(PopOne2D), 'min',PopOne2D(1), 'max',PopOne2D(2), 'SliderStep',[1/PopStrVal{4,2} SliderStep2]);
+                'value',mean(PopOne2D), 'min',PopOne2D(1), 'max',PopOne2D(2), 'SliderStep',[1/(PopStrVal{4,2}-1) SliderStep2]);
             s2D.Position = [P2D(1) P2D(2)-0.11 P2D(3) 0.025];
             LeftTxt2D = uicontrol('Style','text', 'Units','normalized', 'Position',[P2D(1)-0.03 P2D(2)-0.11 0.03 0.025],'String',num2str(PopOne2D(1),3) ,'FontSize',15);
             RightTxt2D = uicontrol('Style','text', 'Units','normalized', 'Position',[P2D(1)+P2D(3) P2D(2)-0.11 0.03 0.025],'String',num2str(PopOne2D(2),3) ,'FontSize',15);
@@ -61,7 +64,7 @@ if D==3
 
             SliderCallFromPop3D = @(src,cbdata,AxisString) slider_callback3D(src,cbdata,ax2D,AxisString,ax3D.UserData,c2D_Lim);
             s3D = uicontrol('Parent',fig,'Style','slider', 'Units','normalized', 'Callback', @(src,cbdta) SliderCallFromPop3D(src,cbdta,PopStrVal{3,1}),...
-                'value',mean(PopOne3D), 'min',PopOne3D(1), 'max',PopOne3D(2), 'SliderStep',[1/PopStrVal{4,1} SliderStep2]);
+                'value',mean(PopOne3D), 'min',PopOne3D(1), 'max',PopOne3D(2), 'SliderStep',[1/(PopStrVal{4,1}-1) SliderStep2]);
             s3D.Position = [P3D(1) P3D(2)-0.11 P3D(3) 0.025];
             LeftTxt3D = uicontrol('Style','text', 'Units','normalized', 'Position',[P3D(1)-0.03 P3D(2)-0.11 0.03 0.025],'String',num2str(PopOne3D(1),3) ,'FontSize',15);
             RightTxt3D = uicontrol('Style','text', 'Units','normalized', 'Position',[P3D(1)+P3D(3) P3D(2)-0.11 0.03 0.025],'String',num2str(PopOne3D(2),3) ,'FontSize',15);
@@ -141,11 +144,11 @@ elseif D==2
             c1D_Hold = uicontrol('Parent',fig,'Style','checkbox', 'Units','normalized', 'value',0, 'max',1, 'min',0, 'String','Hold Plot', 'FontSize',13, 'Position',[P1D(1)+0.1 P1D(2)-0.07 0.08 0.02]);
             
             PopCall1D = @(src,cbdata) popmenu_callbackFit1D(src,cbdata, ax1D);
-            pf1D = uicontrol('Parent',fig, 'Style','popupmenu', 'string',[{'Disable'} PackageNames('Fit Classes')], 'FontSize',10, 'Units','normalized', 'Position', [P1D(1) P1D(2)-0.1 0.1 0.03], 'Callback',PopCall1D);
+            pf1D = uicontrol('Parent',fig, 'Style','popupmenu', 'string',[{'Disable'} PackageNames(FitClassesName)], 'FontSize',10, 'Units','normalized', 'Position', [P1D(1) P1D(2)-0.1 0.1 0.03], 'Callback',PopCall1D);
             
             SliderCallFromPop2D = @(src,cbdata,AxisString) slider_callback2D(src,cbdata,ax1D,AxisString,ax2Dpc,c1D_Lim,c1D_Hold,pf1D);
             s2D = uicontrol('Parent',fig,'Style','slider', 'Units','normalized', 'Callback', @(src,cbdta) SliderCallFromPop2D(src,cbdta,PopStrVal{3,2}),...
-                'value',mean(PopOne2D), 'min',PopOne2D(1), 'max',PopOne2D(2), 'SliderStep',[1/PopStrVal{4,2} SliderStep2]);
+                'value',mean(PopOne2D), 'min',PopOne2D(1), 'max',PopOne2D(2), 'SliderStep',[1/(PopStrVal{4,2}-1) SliderStep2]);
             s2D.Position = [P2Dpc(1) P2Dpc(2)-0.11 P2Dpc(3) 0.025];
             LeftTxt2D = uicontrol('Style','text', 'Units','normalized', 'Position',[P2Dpc(1)-0.03 P2Dpc(2)-0.11 0.03 0.025],'String',num2str(PopOne2D(1),3) ,'FontSize',15);
             RightTxt2D = uicontrol('Style','text', 'Units','normalized', 'Position',[P2Dpc(1)+P2Dpc(3) P2Dpc(2)-0.11 0.03 0.025],'String',num2str(PopOne2D(2),3) ,'FontSize',15);
@@ -253,7 +256,17 @@ function slider_callback2D(src,~,Plot1D,AxisString,Plot2D,CheckBoxLim,CheckBoxHo
         Hold = false;
     end
     if PlotFlag
-        plot(Plot1D, x, y, Plot1D.Parent.UserData.Properties.Plot_Style)
+        cel = {};
+        if isfield(Plot1D.Parent.UserData.Properties, 'Plot_Style')
+            cel = {Plot1D.Parent.UserData.Properties.Plot_Style};
+        end
+        
+        if isfield(Plot1D.Parent.UserData.Properties, 'PlotProperties')
+            cel = [cel Plot1D.Parent.UserData.Properties.PlotProperties];
+        end
+
+        plot(Plot1D, x, y, cel{:})
+
         Plot1D.Title.String = Title;
         Plot1D.XLabel.String = XLabel;
         Plot1D.UserData = UserData;
@@ -286,7 +299,7 @@ end
 function popmenu_callback3D(src,~,slider3D,SliderCall,Pop2D,Pop2D_call,value_cell,LeftTxt,RightTxt)
     SV = src.Value;
     AxBounds = value_cell{2,SV};
-    set(slider3D, 'value',mean(AxBounds), 'min',AxBounds(1), 'max',AxBounds(2), 'SliderStep',[1/value_cell{4,SV} max(1/value_cell{4,SV},0.1)],...
+    set(slider3D, 'value',mean(AxBounds), 'min',AxBounds(1), 'max',AxBounds(2), 'SliderStep',[1/(value_cell{4,SV}-1) max(1/value_cell{4,SV},0.1)],...
         'Callback', @(src,cbdata) SliderCall(src,cbdata,value_cell{3,SV}))
     set(LeftTxt, 'String', num2str(AxBounds(1),3))
     set(RightTxt, 'String', num2str(AxBounds(2),3))
@@ -297,7 +310,7 @@ end
 function popmenu_callback2D(src,~,slider2D,SliderCall,value_cell,LeftTxt,RightTxt,pf1D)
     SV = src.Value;
     AxBounds = value_cell{2,SV};
-    set(slider2D, 'value',mean(AxBounds), 'min',AxBounds(1), 'max',AxBounds(2),  'SliderStep',[1/value_cell{4,SV} max(1/value_cell{4,SV},0.1)],...
+    set(slider2D, 'value',mean(AxBounds), 'min',AxBounds(1), 'max',AxBounds(2),  'SliderStep',[1/(value_cell{4,SV}-1) max(1/value_cell{4,SV},0.1)],...
         'Callback', @(src,cbdata) SliderCall(src,cbdata,value_cell{1,SV}))
     set(LeftTxt, 'String', num2str(AxBounds(1),3))
     set(RightTxt, 'String', num2str(AxBounds(2),3))
@@ -308,7 +321,7 @@ function popmenu_callbackFit1D(src,~, Plot1D)
     SV = src.Value;
     pop = src;
     SF = pop.String{SV};
-    [FitNames,FitHandles] = PackageNames('FitClasses');
+    [FitNames,FitHandles] = PackageNames(FitClassesName);
     PopFitNames = [{'Disable'} FitNames];
     if length(unique(lower(PopFitNames)))~=length(pop.String) || ~all(strcmpi(unique(lower(PopFitNames)), pop.String'))
         pop.String = PopFitNames;
@@ -363,7 +376,8 @@ function LimCallback2D(~, ~, Plot2Dsurf, Plot2Dpc)
 end
 
 function ExportPlotCallBack(~, ~, Plot1D)
-    prompt = {'Enter plot number:', 'Enter legend:', 'Enter font size:', 'Enter plot properies:', 'Enter Range:', 'Copy As is:'};
+    prompt = {'Enter plot number:', 'Enter legend:', 'Enter font size:', 'Enter plot properies:', 'Enter Range:', 'Copy As is:', 'Change Color On Copy:'};
+    %
     dlgtitle = 'Add Plot to Target Figure';
     try
         [Plot1D.Parent.UserData.ExportPlotProperties, OK] = StructrureFieldsMenu(Plot1D.Parent.UserData.ExportPlotProperties, @parse_num_cell_sym2char, @parse_str2num_cell, prompt, dlgtitle);
@@ -387,24 +401,34 @@ function ExportPlotCallBack(~, ~, Plot1D)
         else
             Lx = Range(1); Hx = Range(2);
         end
-        CopyChildren = EPP.CopyChildren;
         
         xlbl = Plot1D.XLabel.String;
         ylbl = Plot1D.YLabel.String;
 
         Children = Plot1D.Children(end:-1:1);
-        Cells = cell(1,numel(Children));
+        Cells = cell(1, numel(Children));
+        
+        color_counter = 0;
+        if EPP.ChangeColorOnCopy && ishandle(EPP.Plot_Number)
+            color_counter = sum(arrayfun(@(x) strcmpi(x.Type, 'line'), figure(EPP.Plot_Number).Children(2).Children));
+        end
+            
         for i2 = 1:numel(Children)
             Children(i2).UserData = [];
             xd = Children(i2).XData;
-            if strcmpi(Children(i2).Type, 'line') && ~CopyChildren
+            if strcmpi(Children(i2).Type, 'line') && ~EPP.CopyChildren
                 Cells{i2} = [Children(i2).XData(xd>=Lx & xd<=Hx); Children(i2).YData(xd>=Lx & xd<=Hx)];
+            elseif strcmpi(Children(i2).Type, 'functionline') && ~EPP.CopyChildren
+                xr = Children(i2).XRange;
+                Children(i2).UserData = ['XRange=[' num2str(max(Lx, xr(1))) ' ' num2str(min(Hx, xr(2))) ']'];
             else
-                if strcmpi(Children(i2).Type, 'functionline') && ~CopyChildren
-                    xr = Children(i2).XRange;
-                    Children(i2).UserData = ['XRange=[' num2str(max(Lx,xr(1))) ' ' num2str(min(Hx,xr(2))) ']'];
-                end
                 Cells{i2} = Children(i2);
+                if EPP.ChangeColorOnCopy
+                    if strcmpi(Children(i2).Type, 'line')
+                        color_counter = mod(color_counter, length(Colors)) + 1;
+                    end
+                    Cells{i2}.Color = Colors(color_counter);
+                end
             end
         end
         s_plot([], Cells, EPP.PlotProperties, '', '', Legend, EPP.Plot_Number, xlbl, ylbl, EPP.FontSize, '', 0, 0, 1);
@@ -417,19 +441,22 @@ function ChangeFigProperties(src, ~)
 end
 function AddProperties(fig)
     % General properties
-    MoreProp.Plot_Style = 'o';
+    MoreProp.Plot_Style = {'o'};
+    MoreProp.PlotProperties = {};
     if isfield(fig.UserData, 'Properties')
         fig.UserData.Properties = update_structure(fig.UserData.Properties, MoreProp, 'onlynew',1);
     else
         fig.UserData.Properties = MoreProp;
     end
     % Export plot properties
+
     MoreExportPlotProp.Plot_Number = '';
     MoreExportPlotProp.Legend = {};
     MoreExportPlotProp.FontSize = '';
-    MoreExportPlotProp.PlotProperties = {};
+    MoreExportPlotProp.PlotProperties = {'MarkerSize', 8, 'LineWidth', 1};
     MoreExportPlotProp.Range = [-inf inf];
     MoreExportPlotProp.CopyChildren = 1;
+    MoreExportPlotProp.ChangeColorOnCopy = 1;
     if isfield(fig.UserData, 'AddPlotProperties')
         fig.UserData.ExportPlotProperties = update_structure(fig.UserData.ExportPlotProperties, MoreExportPlotProp, 'onlynew',1);
     else

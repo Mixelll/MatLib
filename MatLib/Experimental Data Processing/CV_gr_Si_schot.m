@@ -1,7 +1,8 @@
 fileprop = {'txt', '	', [0 0]}; %{'format', 'delimeter', [row_shift column_shift OPTIONAL_to_row OPTIONAL_to_column]}
+root_path = 'My Drive\MATLAB Drive\vars\';
 path = 'D:\Cascade 301\301226 gr-Si Schottky b1 C-V\2T\C-V\100um\try';
 %path = 'C:\Users\admin2\Google Drive\EE MSc\200413 gr-Si Schottky b1\2T Left from center\all CV\try';
-path = 'C:\Users\admin2\Google Drive\EE MSc\In with the New\Meas\Probing\T C-t\5 - Gr-Si B1 4 Left Center\Vacuum\T Up\H-Si CN11 DC=-1V P=2V,1V,-1V\250K (2)\CV';
+path = strcat(root_path, 'B5 b5 150um 4\B5 b5 150um 4 A');
 index = ''; % ind (int or str): for example if your files end with a number *ind* and some string *str* after it. input in formet 'indstr' e.g. '5)'. write 'm' instead of ind
 sortby = ''; % sortby (array): sort the files by the numbers that are located (it searches) in the positions you enter in sortby
 saveop =  0;    

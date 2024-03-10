@@ -1,4 +1,4 @@
-function [str, fun, span, FittedParamCell] = C_schot_fit_A(x,y,BoxIn,A,es,N,Vb,n,FitProp,varargin)
+function [str, fun, span, FittedParamCell] = C_schot_fit_A(x, y, BoxIn, A, es, N, Vb, n, T, FitProp, varargin)
 if strcmpi(x, 'model')
     str = 'C = A*sqrt(es*e0*q*N)/sqrt(2*n*(n*(Vb-k*T)-V))'; fun = []; span = []; FittedParamCell = [];
 else
@@ -40,7 +40,9 @@ end
 
 syms c V
 independent = {'V'};
-T = 295;
+if ~T
+    T = 295;
+end
 k = 8.617e-5;
 q = 1.6e-19;
 e0 = 8.854e-14;

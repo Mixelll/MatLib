@@ -1,6 +1,6 @@
 classdef CV_Scht_Fit_Gr1 < matlab.mixin.SetGet
 	properties
-        T = 296;
+        T = 295
         Range = [-inf inf]
         Area = (150e-4)^2 * pi
         RelativePermitivitty = 11.68
@@ -10,11 +10,11 @@ classdef CV_Scht_Fit_Gr1 < matlab.mixin.SetGet
         Vb_Lim = [0 0.5 10]
         IdealityFactor = sym('n')
         Ideality_Factor_Lim = [0.01 1 100]
-        Graphene_Doping = sym('n0');
-        Graphene_Doping_Lim = [0 9e12 inf];
-        v_fermi_Gr = 1e8;
-        Graphene_Vdrop_Coeff = 'Dependent on n0';
-        Graphene_Vdrop_Coeff_Lim = [-10 0.5 10 ];
+        Graphene_Doping = sym('n0')
+        Graphene_Doping_Lim = [0 9e12 inf]
+        v_fermi_Gr = 1e8
+        Graphene_Vdrop_Coeff = 'Dependent on n0'
+        Graphene_Vdrop_Coeff_Lim = [-10 0.5 10 ]
         FitProperties = {'Robust','Bisquare'}
         FitPlotProperties = {}
         LegendProp = {'Location','Best'}
@@ -28,11 +28,11 @@ classdef CV_Scht_Fit_Gr1 < matlab.mixin.SetGet
             Limits = {};
             FN = fieldnames(o);
             for c = DefNameValue
-                if any(strcmp(c{1},FN))
+                if any(strcmp(c{1}, FN))
                     if LimChanged(o.(c{1}), c{2}), Limits(end+1:end+2) = {c{1} o.(c{1})}; end
                 end
             end
-            [FitLeg, fun, span] = C_schot_fit2_B1(x,y,o.Area,o.RelativePermitivitty,o.Doping,o.Vb,o.IdealityFactor,o.Graphene_Vdrop_Coeff,o.Graphene_Doping,Limits{:});
+            [FitLeg, fun, span] = C_schot_fit2_B1(x, y, o.Area, o.RelativePermitivitty, o.Doping, o.Vb, o.IdealityFactor, o.Graphene_Vdrop_Coeff, o.Graphene_Doping, Limits{:});
             hold(Target, 'on')
             if ~isempty(varargin)
                 legend(Target, varargin{:});
