@@ -7,6 +7,8 @@ Ct_path = 'D:\Google Drive\MATLAB Drive\vars\B5 b7 150um 4\B5 b7 150um 4 80-300 
 % Ct_path = 'D:\Google Drive\MATLAB Drive\vars\B5 b7 150um 4\B5 b7 150um 4 DLTS1Up';
 Ct_path = 'D:\Google Drive\MATLAB Drive\vars\B5 b7 150um 4\B5 b7 150um 4 80-300 DLTS up PT1';
 Ct_path = 'C:\Users\admin2\Google Drive\MATLAB Drive\vars\IB2 CL 100um 10\IB2 CL 100um 10 80-300 DLTS up';
+Ct_path = 'C:\Users\user\My Drive\MATLAB Drive\vars\B5 b7 150um 4\B5 b7 150um 4 80-300 DLTS up V0-1';
+
 
 DAQ = true; 
 Plotter = false;
@@ -129,9 +131,9 @@ if DAQ
 %     Range = [0 inf];
     TemperatureRange = [0 300.6 1];
 %     TemperatureRange = [250 inf];
-%     CurveSelect = {["F0T-1"]};
+    CurveSelect = {["F0T-1"]};
 %     CurveSelect = {"F-0.3T-1"};
-    CurveSelect = {["F-0.5T-1"]};
+    % CurveSelect = {["F-0.5T-1"]};
 %     CurveSelect = {@(F0Tm1,Fm0p05Tm1) F0Tm1-Fm0p05Tm1};
 %     CurveSelect = {@(Fm0p3Tm1,Fm0p5Tm1) Fm0p3Tm1-Fm0p5Tm1};
 %     CurveSelect = {@(F0Tm1,Fm0p3Tm1) F0Tm1-Fm0p3Tm1};
@@ -141,12 +143,12 @@ end
 
 %% Extract DLTS signal
 %General options
-DLTS_Analyze = 0; % 1 - run analyze and signal plot, 1 - run only signal plot
+DLTS_Analyze = 0; % 1 - run analyze and signal plot, 0 - run only signal plot
 DLTS_SAVE = 1; % save graphs
 % Signal extract and plot options
 CtPlotOnce = 1; % plot C-t curves once
 PlotFit = 0; % Plot exp(-t/tau) fit for each C-t curve
-
+Commands0 = {};
 S_PlotEach = 0; % plot DLTS Signal curves for each rate window USUALLY FALSE
  
 N_Signals_Plot = 8; % Select # of rate windows for which a DLTS signal will be plotted 
@@ -185,7 +187,7 @@ CtFNames = fieldnames(CtCells);
 NCtFNames = numel(CtFNames);
 
 if CtPlotOnce
-    dplot = @(sx, sy, leg, subp) s_plot(sx, sy, PlotPropCt, Commands, [Title ', Ct\_MovAvg=' num2str(MovMean)], leg, subp, lblt, lblC, FontS, PlotType, PlotHidden, ScreenSize);% s_plot(sx1, sy1, plotproperties, charttitle, legendd, subplott, xlbl, ylbl, fontsize, varargin)
+    dplot = @(sx, sy, leg, subp) s_plot(sx, sy, PlotPropCt, Commands0, [Title ', Ct\_MovAvg=' num2str(MovMean)], leg, subp, lblt, lblC, FontS, PlotType, PlotHidden, ScreenSize, 0);% s_plot(sx1, sy1, plotproperties, charttitle, legendd, subplott, xlbl, ylbl, fontsize, varargin)
     Figures = plot_charts2(CtCells, dplot, [1 0 0 15], [], [], [] ,[], 'TrimLeg',trimheader, 'HeaderParam',LPH, 'SpareParameter','T'); % plot_charts2(scells, line_plot, plotop1, trimleg, fit_data, headerparam, boxin)
     if DLTS_SAVE
         if isstruct(CtCells)
@@ -209,7 +211,7 @@ end
 RateWindowCell{end+1} = RateWindowArray(5, 30*tc, 9400*tc, 100, @LogSpace);
 RateWindowCell{end+1} = RateWindowArray(10, 30*tc, 9400*tc, 100, @LogSpace);
 RateWindowCell{end+1} = RateWindowArray(20, 30*tc, 9400*tc, 100, @LogSpace);
-
+5
 PlotRange = [0 0.36];
 for RWC = RateWindowCell
 RateWindow = RWC{:};
@@ -225,11 +227,11 @@ for RW_i = RateWindow
 i = i+1;
 % PlotRange = RW_i;
 xSp = PlotRange(2)-PlotRange(1);
-Commands = {['xlim([' num2str(roundn(PlotRange(1) -0.05*xSp, floor(log10(xSp)-1))) ' ' num2str(roundn(PlotRange(2) +0.2*xSp, floor(log10(xSp)-1))) ']);'], 'legend(''Location'',''southeast'')'};
+Commands = {['xlim([' num2str(roundToPrecision(PlotRange(1) -0.05*xSp, floor(log10(xSp)-1))) ' ' num2str(roundToPrecision(PlotRange(2) +0.2*xSp, floor(log10(xSp)-1))) ']);'], 'legend(''Location'',''southeast'')'};
 
 DLTS = @(x,y) DLTS_Signal(x, y, RW_i, N, mean(y(end-round(length(y)/C0Frac):end)), SignalMode, 'MinLegend',true, 'DecayUp',DecayUp, 'SurfaceStates',SurfaceStates, 'InterfaceWidth',InterfaceWidth);
 
-dplot = @(sx, sy, leg, subp) s_plot(sx, sy, PlotPropCt, Commands, [Title ' - RateWindow= ' sprintf('%0.2g ',RW_i) ', DLTS Signal Mode - ' SignalModeStr ', Ct_MovAvg=' num2str(MovMean)], leg, subp, lblt, lblC, FontS, PlotType, PlotHidden, ScreenSize);% s_plot(sx1, sy1, plotproperties, charttitle, legendd, subplott, xlbl, ylbl, fontsize, varargin)
+dplot = @(sx, sy, leg, subp) s_plot(sx, sy, PlotPropCt, Commands, [Title ' - RateWindow= ' sprintf('%0.2g ',RW_i) ', DLTS Signal Mode - ' SignalModeStr ', Ct_MovAvg=' num2str(MovMean)], leg, subp, lblt, lblC, FontS, PlotType, PlotHidden, ScreenSize, 0);% s_plot(sx1, sy1, plotproperties, charttitle, legendd, subplott, xlbl, ylbl, fontsize, varargin)
 
 [Figures, Ct_DLTS_Out] = plot_charts2(CtCells, dplot, PlotOpt, DLTS, PlotFit, FitPlotProp ,PlotRange, 'TrimLeg',trimheader, 'HeaderParam',LPH, 'SpareParameter','T'); % plot_charts2(scells, line_plot, plotop1, trimleg, fit_data, headerparam, boxin)
 j = 0;
@@ -258,7 +260,7 @@ FontS = FontS;
 FontS.legend = 16;
 
 TSp = T(end)-T(1);
-cmd = ['xlim([' num2str(roundn(T(1) -0.05*TSp, floor(log10(TSp)-1))) ' ' num2str(roundn(T(end) +0.05*TSp, floor(log10(TSp)-1))) ']);'];
+cmd = ['xlim([' num2str(roundToPrecision(T(1) -0.05*TSp, floor(log10(TSp)-1))) ' ' num2str(roundToPrecision(T(end) +0.05*TSp, floor(log10(TSp)-1))) ']);'];
 cmd1p = {LegNE cmd};
 
 if ~isempty(Ct_FieldName)
@@ -297,7 +299,7 @@ for k = 1:j
     SaveDirOuter = [Ct_path '\' FileAddall{1,k}  ', SigMode=' num2str(SignalMode) ', Ct_MovAvg=' num2str(MovMean) ', S_MovAvg=' num2str(S_MovMean) ' ' DTSTR '\Ratio=' num2str(Ratio,2) ];
     if N_Signals_Plot
         ii = ceil(size(Tall{k},2)/N_Signals_Plot);
-        [AX, FigureS] = s_plot(Tall{k}(:,1:ii:end), Sall{k}(:,1:ii:end), PlotPropRes, [{cmd} YLim_S], [Device TitleAdd ' - DLTS Signal' SignalModeStr ', Ratio=' num2str(Ratio,2) ', Ct\_MovAvg=' num2str(MovMean) ', S\_MovAvg=' num2str(S_MovMean)], Legall(1:ii:end,k), [], lblT, lblS, FontS, PlotType, false, true);
+        [AX, FigureS] = s_plot(Tall{k}(:,1:ii:end), Sall{k}(:,1:ii:end), PlotPropRes, [{cmd} YLim_S], [Device TitleAdd ' - DLTS Signal' SignalModeStr ', Ratio=' num2str(Ratio,2) ', Ct\_MovAvg=' num2str(MovMean) ', S\_MovAvg=' num2str(S_MovMean)], Legall(1:ii:end,k), [], lblT, lblS, FontS, PlotType, false, true, 0);
     end
     if DLTS_SAVE, SaveFigures(FigureS, SaveDirOuter, {}, SaveFormat, ['DLTS Signal Mode ' num2str(SignalMode)]); end
 end
@@ -387,7 +389,7 @@ for FT_i = FitRange
 i = i+1;
 PlotRange = FT_i;
 xSp = PlotRange(2)-PlotRange(1);
-Commands = {['xlim([' num2str(roundn(PlotRange(1) -0.05*xSp, floor(log10(xSp)-1))) ' ' num2str(roundn(PlotRange(2) +0.3*xSp, floor(log10(xSp)-1))) ']);'], 'legend(''Location'',''southeast'')'};
+Commands = {['xlim([' num2str(roundToPrecision(PlotRange(1) -0.05*xSp, floor(log10(xSp)-1))) ' ' num2str(roundToPrecision(PlotRange(2) +0.3*xSp, floor(log10(xSp)-1))) ']);'], 'legend(''Location'',''southeast'')'};
 
 Ct = @(x,y) Ct_Nt_tau_fit(x,y,FT_i,mean(y(end-round(length(y)/C0Frac):end)),N,NT_i,FitProp);
  
@@ -423,7 +425,7 @@ for c = Ct_FittedCells
     end
 end
 TSp = T(end)-T(1);
-cmd = ['xlim([' num2str(roundn(T(1) -0.05*TSp, floor(log10(TSp)-1))) ' ' num2str(roundn(T(end) +0.05*TSp, floor(log10(TSp)-1))) ']);'];
+cmd = ['xlim([' num2str(roundToPrecision(T(1) -0.05*TSp, floor(log10(TSp)-1))) ' ' num2str(roundToPrecision(T(end) +0.05*TSp, floor(log10(TSp)-1))) ']);'];
 cmd1p = {LegNE cmd};
 cmd2p = {LegNW cmd ; LegNE cmd};
 % [~, Figures(end+1)] = s_plot(T, tau1, {'.', 'MarkerSize',40}, 'legend(''Location'',''northeast'')', [Title ' - Trap Emission Times and Trap Concentration'], {'\tau_{1}'}, [], 'Temperature [K]', 'Emission Time [sec]', Font, PlotType, false, true);

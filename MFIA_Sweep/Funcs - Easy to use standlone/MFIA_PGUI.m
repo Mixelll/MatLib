@@ -258,7 +258,7 @@ function slider_callback2D(src,~,Plot1D,AxisString,Plot2D,CheckBoxLim,CheckBoxHo
     if PlotFlag
         cel = {};
         if isfield(Plot1D.Parent.UserData.Properties, 'Plot_Style')
-            cel = {Plot1D.Parent.UserData.Properties.Plot_Style};
+            cel = Plot1D.Parent.UserData.Properties.Plot_Style;
         end
         
         if isfield(Plot1D.Parent.UserData.Properties, 'PlotProperties')

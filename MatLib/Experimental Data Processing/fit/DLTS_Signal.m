@@ -8,6 +8,7 @@ p.addParameter('Solve', false, isbool); % Use solve to extract tau
 p.addParameter('LegendMode', 1, @isnumeric); % What to display in legend
 p.addParameter('SurfaceStates', false, isbool); % Calculate surface state density instead of volume states
 p.addParameter('InterfaceWidth', 0, @isnumeric); % Depletion layer width
+p.addParameter('dC0', 0, @isnumeric); % Depletion layer width
 p.parse(varargin{:});
 DU = p.Results.DecayUp;
 SV = p.Results.Solve;
